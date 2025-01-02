@@ -1,26 +1,22 @@
+# train.py
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import ConfusionMatrixDisplay
-import matplotlib.pyplot as plt
-import numpy as np
+from sklearn.metrics import accuracy_score
 
-# Read in data
-X_train = np.genfromtxt("data/train_features.csv")
-y_train = np.genfromtxt("data/train_labels.csv")
-X_test = np.genfromtxt("data/test_features.csv")
-y_test = np.genfromtxt("data/test_labels.csv")
+# Load dataset
+data = load_iris()
+X_train, X_test, y_train, y_test = train_test_split(data.data, data.target, test_size=0.2)
 
-# Fit a model
-depth = 2
-clf = RandomForestClassifier(max_depth=depth)
-clf.fit(X_train, y_train)
+# Train model
+model = RandomForestClassifier()
+model.fit(X_train, y_train)
 
-acc = clf.score(X_test, y_test)
-print(acc)
-with open("metrics.txt", "w") as outfile:
-    outfile.write("Accuracy: " + str(acc) + "\n")
+# Evaluate
+y_pred = model.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
 
-# Plot it
-disp = ConfusionMatrixDisplay.from_estimator(
-    clf, X_test, y_test, normalize="true", cmap=plt.cm.Blues
-)
-plt.savefig("plot.png")
+# Save metrics to a report
+with open("report.md", "w") as f:
+    f.write(f"# Model Performance\n\nAccuracy: {accuracy:.2f}\n")
+
